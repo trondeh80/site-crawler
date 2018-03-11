@@ -4,8 +4,8 @@ function parseHtml(htmlString){
   return cheerio.load(htmlString);
 }
 
-function getLinks($) {
-  const linkElements = $('a');
+function getLinks(html) {
+  const linkElements = parseHtml(html)('a');
   const links = [];
   if (linkElements.each) {
     linkElements.each((i, element) => {
