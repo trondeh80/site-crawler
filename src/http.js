@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const MAX_CONN = 5; // Prevent erroring with nodes MAX connection
+const connectionInterval = 100;
 let connectionCount = 0;
 
 function get(url, options = {}) {
@@ -22,7 +23,7 @@ function retry(getFn) {
           clearInterval(timer);
           getFn().then(data => resolve(data));
         }
-      }, 1000);
+      }, connectionInterval);
     } else {
       getFn().then(data => resolve(data));
     }

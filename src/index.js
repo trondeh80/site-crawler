@@ -16,14 +16,12 @@ async function start() {
   await iteration(page);
 }
 
-async function iteration(Page) {
+async function iteration(Page, parentPage) {
   try {
 
-    console.log('url', Page.url)
     const html = await get(Page.url);
-    site.getPages(getLinks(html))
-      .forEach(page => iteration(page)); // Iterate through these links
-
+    await Promise.all(site.getPages(getLinks(html))
+      .map(linkPage => (iteration(linkPage, Page)))); // Iterate through these links
     Page.crawled = true;
 
     const incomplete = Object.keys(site.links)
@@ -42,6 +40,7 @@ async function iteration(Page) {
     Page.error = true;
     Page.response = err;
     Page.crawled = true;
+    Page.parentPage = parentPage;
     if (err && err.status && err.status === 404) {
       site.errors[404].push(Page);
     } else {

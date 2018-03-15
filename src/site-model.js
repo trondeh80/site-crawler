@@ -46,7 +46,7 @@ class SiteModel {
 
     if (this.errors[404]) {
       this.errors[404].forEach(page => {
-        console.log(`404: ${page.url}`);
+        console.log(`404: ${page.url} - Discovered on: ${page.parentPage.url || 'unknown'}`);
       });
     }
 
