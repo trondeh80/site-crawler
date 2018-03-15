@@ -14,7 +14,8 @@ class SiteModel {
 
   getPages(links) {
     return links
-      .filter((link) => (link && !this.links[this.getUrl(link)] && this.isInternal(link) && !this.isCrawled(link)))
+      .filter((link) => (
+        link && !this.links[this.getUrl(link)] && this.isInternal(link) && !this.isCrawled(link)))
       .map((link) => {
         const page = SiteModel.createPageModel({ url: this.getUrl(link) });
         this.links[page.url] = page; // Storing instance of page in the link list.
@@ -27,8 +28,9 @@ class SiteModel {
   }
 
   isInternal(url) {
-    const hostname = this.getUrl(url);
-    const reg = new RegExp(`(^\/)|(^http(s)?:\/\/(www\.)?${hostname})`);
+    const hostname = this.site.link.host.replace('www', '');
+    const path = this.site.link.pathname || '/';
+    const reg = new RegExp(`(^${path}(.*))|(^http(s)?:\/\/(www\.)?${hostname}${path}\/(.*))`);
     return url.match(reg);
   }
 
@@ -51,12 +53,6 @@ class SiteModel {
     console.log(`Crawled ${Object.keys(this.links).length} pages`);
     console.log(`404 errors: ${this.errors[404].length}`);
     console.log(`Other errors: ${this.errors[500].length}`);
-
-    // if (this.errors[500].length) {
-    //   this.errors[500].forEach(err => {
-    //     debugger;
-    //   });
-    // }
   }
 
 
