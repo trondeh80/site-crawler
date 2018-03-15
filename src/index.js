@@ -4,8 +4,8 @@ const SiteModel = require('./site-model');
 
 const arguments = process.argv;
 if (!arguments[2])  {
-  console.error('Exiting. No URL was given!\nUsage: node index.js http://www.yoursitename.com/subdir');
-  process.exit(1);
+  console.error('Exiting. No URL was given as first argument!\nUsage: node index.js http://www.yoursitename.com/subdir');
+  process.exitCode = 1;
 }
 const siteUrl = arguments[2];
 
@@ -32,7 +32,7 @@ async function iteration(Page) {
     if (incomplete.length === 0) {
       site.printReport();
       if (site.errors[404].length === 0 && site.errors[500].length === 0) {
-        process.exit(0);
+        process.exitCode = 0;
       }
     } else {
       console.log('Pages left: ', incomplete.length);
