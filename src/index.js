@@ -20,8 +20,8 @@ async function iteration(Page, parentPage) {
   try {
 
     const html = await get(Page.url);
-    await Promise.all(site.getPages(getLinks(html))
-      .map(linkPage => (iteration(linkPage, Page)))); // Iterate through these links
+    site.getPages(getLinks(html))
+      .map(linkPage => (iteration(linkPage, Page))); // Iterate through these links
     Page.crawled = true;
 
     const incomplete = Object.keys(site.links)

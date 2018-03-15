@@ -14,24 +14,26 @@ class SiteModel {
 
   getPages(links) {
     return links
-      .filter((link) => (
-        link && !this.links[this.getUrl(link)] && this.isInternal(link) && !this.isCrawled(link)))
-      .map((link) => {
-        const page = SiteModel.createPageModel({ url: this.getUrl(link) });
+      .filter(link => !!link && this.isInternal(link))
+      .map(link => (new URL(this.getUrl(link)).href))
+      .filter((url) => (
+        !this.links[url] && !this.isCrawled(url)))
+      .map((url) => {
+        const page = SiteModel.createPageModel({ url });
         this.links[page.url] = page; // Storing instance of page in the link list.
         return page;
       });
   }
 
   isCrawled(link) {
-    return this.links[this.getUrl(link)] && this.links[this.getUrl(link)].crawled === true;
+    return this.links[link] && this.links[link].crawled === true;
   }
 
   isInternal(url) {
-    const hostname = this.site.link.host.replace('www', '');
+    const hostname = this.site.link.host.replace('www.', '');
     const path = this.site.link.pathname || '/';
     const reg = new RegExp(`(^${path}(.*))|(^http(s)?:\/\/(www\.)?${hostname}${path}\/(.*))`);
-    return url.match(reg);
+    return !!url.match(reg);
   }
 
   getUrl(url) {
@@ -47,6 +49,13 @@ class SiteModel {
     if (this.errors[404]) {
       this.errors[404].forEach(page => {
         console.log(`404: ${page.url} - Discovered on: ${page.parentPage.url || 'unknown'}`);
+      });
+    }
+
+    if (this.errors[500]) {
+      console.log('Error')
+      this.errors[500].forEach(page => {
+        console.log(`Other error: ${page.url} - Discovered on: ${page.parentPage.url || 'unknown'}`);
       });
     }
 
