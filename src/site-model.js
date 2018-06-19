@@ -46,13 +46,13 @@ class SiteModel {
   printReport() {
     console.log('Statstics');
 
-    if (this.errors[404]) {
+    if (this.errors[404].length) {
       this.errors[404].forEach(page => {
         console.log(`404: ${page.url} - Discovered on: ${page.parentPage.url || 'unknown'}`);
       });
     }
 
-    if (this.errors[500]) {
+    if (this.errors[500].length) {
       console.log('Error')
       this.errors[500].forEach(page => {
         console.log(`Other error: ${page.url} - Discovered on: ${page.parentPage.url || 'unknown'}`);
