@@ -1,5 +1,6 @@
 const { get } = require('./http');
 const { getLinks } = require('./dom');
+const sleep = require('./sleep');
 const SiteModel = require('./site-model');
 
 const arguments = process.argv;
@@ -18,13 +19,13 @@ async function start() {
 
 async function iteration(Page, parentPage) {
   try {
-
     const html = await get(Page.url);
     Page.crawled = true;
 
     const linkList = site.getPages(getLinks(html));
     for (let i = 0; i < linkList.length; i++) {
       await iteration(linkList[i], Page);
+      await sleep(1000);
     }
 
     const incomplete = Object.keys(site.links)
