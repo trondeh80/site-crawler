@@ -20,9 +20,12 @@ async function iteration(Page, parentPage) {
   try {
 
     const html = await get(Page.url);
-    site.getPages(getLinks(html))
-      .map(linkPage => (iteration(linkPage, Page))); // Iterate through these links
     Page.crawled = true;
+
+    const linkList = site.getPages(getLinks(html));
+    for (let i = 0; i < linkList.length; i++) {
+      await iteration(linkList[i], Page);
+    }
 
     const incomplete = Object.keys(site.links)
       .filter(key => site.links[key].crawled !== true);
@@ -41,10 +44,12 @@ async function iteration(Page, parentPage) {
     Page.response = err;
     Page.crawled = true;
     Page.parentPage = parentPage;
-    if (err && err.status && err.status === 404) {
-      site.errors[404].push(Page);
-    } else {
-      site.errors[500].push(Page);
+    if (err && err.status) {
+        if (err.status === 404) {
+          site.errors[404].push(Page);
+        } else if(err.status === 500) {
+          site.errors[500].push(Page);
+        }
     }
   }
 }
